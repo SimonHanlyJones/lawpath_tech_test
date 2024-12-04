@@ -1,6 +1,7 @@
 import Image from "next/image";
-import { AddressProvider } from "./AddressContext";
-import AddressValidator from "./addressValidator";
+import { AddressProvider } from "../contexts/AddressContext";
+import AddressValidator from "./components/addressValidator";
+import HelloPage from "./apiTest";
 
 export default function Home() {
   return (
@@ -101,6 +102,7 @@ export default function Home() {
       <AddressProvider>
         <AddressValidator />
       </AddressProvider>
+      <HelloPage />
     </div>
   );
 }
