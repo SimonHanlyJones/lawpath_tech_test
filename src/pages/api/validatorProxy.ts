@@ -1,12 +1,15 @@
 import { graphql, buildSchema } from "graphql";
-// import axios from "axios";
-
-const apiURL = "https://digitalapi.auspost.com.au/postcode/search.json";
+import axios from "axios";
+import { SearchPostcodeInterface } from "@/app/lib/postcodeValidatorFunctions";
+import { NextApiRequest, NextApiResponse } from "next";
 
 const schema = buildSchema(`
   type PostcodeValidationResult {
     valid: Boolean
     reason: String
+    badPostcode: Boolean
+    badState: Boolean
+    badSuburb: Boolean
   }
 
   type Query {
@@ -14,16 +17,156 @@ const schema = buildSchema(`
   }
 `);
 
+// interface AuspostPostcodeSearchApiResponse {
+//   localities: {
+//     locality: [
+//       {
+//         category: string;
+//         id: number;
+//         latitude: number;
+//         location: string;
+//         longitude: number;
+//         postcode: number;
+//         state: string;
+//       }
+//     ];
+//   };
+// }
+
+interface AuspostParsedResponse {
+  location: string;
+  state: string;
+  postcode: number;
+}
+
+async function callAustraliaPostApiPostcode(
+  postcode: string
+): Promise<AuspostParsedResponse[]> {
+  try {
+    const response = await axios({
+      method: "get",
+      url: process.env.AUS_POST_POSTCODE_SEARCH_URL,
+      headers: {
+        "auth-key": process.env.AUS_POST_KEY,
+      },
+      params: {
+        q: postcode,
+      },
+    });
+
+    // unpack and parse response to get only what we need, the suburb, state and postcode
+    const unpackedResponse = response.data.localities.locality;
+
+    // if we have no matching locations return an empty array
+    if (!unpackedResponse) return [];
+
+    const parsedResponse: AuspostParsedResponse[] = unpackedResponse.map(
+      (res: {
+        category: string;
+        id: number;
+        latitude: number;
+        location: string;
+        longitude: number;
+        postcode: number;
+        state: string;
+      }) => ({
+        location: res.location,
+        state: res.state,
+        postcode: res.postcode,
+      })
+    );
+
+    return parsedResponse;
+  } catch (error) {
+    throw new Error(`${error}`);
+  }
+}
+
+function checkSuburbAndStateAgainstApiResponse(
+  suburb: string,
+  inputState: string,
+  response: AuspostParsedResponse[]
+): SearchPostcodeInterface {
+  // if there are no matching postcodes
+  if (response.length === 0) {
+    return {
+      valid: false,
+      reason:
+        "the provided postcode does not match any suburb. Please check the postcode.",
+      badPostcode: true,
+      badState: true,
+      badSuburb: true,
+    };
+  }
+
+  // search for perfect match
+  for (const { location, state } of response) {
+    if (
+      location.toLowerCase() === suburb.toLowerCase() &&
+      state.toLowerCase() === inputState.toLowerCase()
+    ) {
+      return {
+        valid: true,
+        reason: "",
+        badPostcode: false,
+        badState: false,
+        badSuburb: false,
+      };
+    }
+  }
+
+  // search for partial match -> suburb and postcode, but wrong state
+  for (const { location } of response) {
+    if (location.toLowerCase() === suburb.toLowerCase()) {
+      return {
+        valid: false,
+        reason:
+          "The provided postcode and suburb does not appear to exist in the provided state. Please check you have entered the correct state.",
+        badPostcode: false,
+        badState: true,
+        badSuburb: false,
+      };
+    }
+  }
+
+  // case for no match between postcode and suburb
+  return {
+    valid: false,
+    reason:
+      "the provided suburb does not appear to match the postcode. Please check the postcode and suburb.",
+    badPostcode: true,
+    badState: true,
+    badSuburb: true,
+  };
+}
+
+type GrasphQlSearchPostcodeArgs = {
+  suburb: string;
+  postcode: string;
+  state: string;
+};
+
 const rootValue = {
-  searchPostcode: async ({ suburb, postcode, state }) => {
-    console.log("Arguments received:", { suburb, postcode, state });
-    // Logic to fetch or compute data
-    // TODO CALL AUST POST API HERE
-    return { valid: true, reason: "Success!" };
+  searchPostcode: async ({
+    suburb,
+    postcode,
+    state,
+  }: GrasphQlSearchPostcodeArgs) => {
+    const ausPostResponse = await callAustraliaPostApiPostcode(postcode);
+    const response = checkSuburbAndStateAgainstApiResponse(
+      suburb,
+      state,
+      ausPostResponse
+    );
+
+    return response;
   },
 };
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== "POST") {
     res.status(405).send("Only POST requests allowed");
     return;
@@ -48,12 +191,22 @@ export default async function handler(req, res) {
     return;
   }
 
-  const response = await graphql({
-    schema,
-    source: query,
-    rootValue,
-    variableValues: variables,
-  });
-  res.status(200).json(response);
+  try {
+    const response = await graphql({
+      schema,
+      source: query,
+      rootValue,
+      variableValues: variables,
+    });
+    if (response.errors) {
+      console.error("errors:", response.errors);
+      res.status(500).json({ errors: response.errors });
+      return;
+    }
+    res.status(200).json(response);
+  } catch (error) {
+    console.error("Error executing GraphQL query:", error);
+    res.status(500).send("Internal server error");
+  }
   return;
 }

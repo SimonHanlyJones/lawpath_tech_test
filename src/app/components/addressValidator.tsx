@@ -101,6 +101,28 @@ function AddressValidator() {
         </div>
         <button type="submit">Submit</button>
       </form>
+      <div>
+        {addressContext.state.isValid ? (
+          <span>Address valid</span>
+        ) : (
+          <span></span>
+        )}
+
+        {addressContext.state.isValid != undefined &&
+        !addressContext.state.isValid ? (
+          <span>Address Not valid</span>
+        ) : (
+          <span></span>
+        )}
+
+        {addressContext.state.isValid &&
+        addressContext.state.reasonInvalid! &&
+        addressContext.state.reasonInvalid.length > 0 ? (
+          <span></span>
+        ) : (
+          <span>{addressContext.state.reasonInvalid}</span>
+        )}
+      </div>
     </div>
   );
 }

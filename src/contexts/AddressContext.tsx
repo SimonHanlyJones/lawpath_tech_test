@@ -1,7 +1,11 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
+import { ApolloProvider } from "@apollo/client";
+import client from "@/app/lib/apolloClient";
+import { queryPostcodeValidationProxyNoAI } from "@/app/lib/postcodeValidatorFunctions";
 
-// TODO move to interface folder
+// TODO implement badFields for red errored fields
+
 interface AddressFormState {
   validationAi: boolean;
   postcode: string;
@@ -11,6 +15,10 @@ interface AddressFormState {
   suburbError: string;
   geographicStateError: string;
   formError: string;
+  isLoading: boolean;
+  isValid: boolean | undefined;
+  reasonInvalid: string | undefined;
+  badFields: string[];
 }
 
 interface AddressContextInterface {
@@ -39,22 +47,17 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     suburbError: "",
     geographicStateError: "",
     formError: "",
+    isLoading: false,
+    isValid: undefined,
+    reasonInvalid: undefined,
+    badFields: [],
   });
 
-  function handleInputChange(name: string, value: string) {
-    setAddressFormData((prevData) => ({
-      ...prevData,
-      [name]: value.trim(), // Dynamically update the corresponding field
-    }));
-  }
-
-  function submitAddressForValidation(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-    const postcode = formData.get("postcode")?.toString();
-    const suburb = formData.get("suburb")?.toString();
-    const geographicState = formData.get("geographicState")?.toString();
+  function validateAddressFormClientSide(
+    postcode: string | undefined,
+    suburb: string | undefined,
+    geographicState: string | undefined
+  ): boolean {
     let hasError = false;
 
     if (!postcode || postcode === "") {
@@ -113,22 +116,62 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
         geographicStateError: "",
       }));
     }
-    console.log(addressContext);
 
+    return hasError;
+  }
+
+  function handleInputChange(name: string, value: string | boolean | string[]) {
+    setAddressFormData((prevData) => ({
+      ...prevData,
+      [name]: value, // Dynamically update the corresponding field
+    }));
+  }
+
+  async function submitAddressForValidation(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    // perform clientside validation
+    const formData = new FormData(event.currentTarget);
+    const postcode = formData.get("postcode")?.toString();
+    const suburb = formData.get("suburb")?.toString();
+    const geographicState = formData.get("geographicState")?.toString();
+    const hasError = validateAddressFormClientSide(
+      postcode,
+      suburb,
+      geographicState
+    );
     if (hasError) return;
+
+    try {
+      const validationResponse = await queryPostcodeValidationProxyNoAI(
+        suburb!,
+        postcode!,
+        geographicState!
+      );
+      handleInputChange("isValid", validationResponse.valid);
+      handleInputChange("reasonInvalid", validationResponse.reason!);
+      handleInputChange("badPostcode", validationResponse.badPostcode!);
+      handleInputChange("badState", validationResponse.badState!);
+      handleInputChange("badSuburb", validationResponse.badSuburb!);
+    } catch (error: unknown) {
+      throw new Error(`${error}`);
+    }
   }
 
   const addressContext: AddressContextInterface = {
     state: addressFormData,
     handleInputChange,
     submitAddressForValidation,
-    // setAddressFormData,
   };
 
   return (
-    <AddressContext.Provider value={addressContext}>
-      {children}
-    </AddressContext.Provider>
+    <ApolloProvider client={client}>
+      <AddressContext.Provider value={addressContext}>
+        {children}
+      </AddressContext.Provider>
+    </ApolloProvider>
   );
 };
 
