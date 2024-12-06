@@ -24,11 +24,11 @@ function AddressValidator() {
           <input
             type="checkbox"
             id="validatorCheckbox"
-            name="validatorAi"
+            name="validationAi"
             onChange={(event) =>
               addressContext.handleInputChange(
                 event.target.name,
-                event.target.value
+                event.target.checked
               )
             }
           />

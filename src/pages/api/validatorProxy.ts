@@ -1,7 +1,8 @@
 import { graphql, buildSchema } from "graphql";
 import axios from "axios";
-import { SearchPostcodeInterface } from "@/app/lib/postcodeValidatorFunctions";
+import { SearchPostcodeInterface } from "@/app/lib/clientSide/postcodeValidatorFunctions";
 import { NextApiRequest, NextApiResponse } from "next";
+import { openAiAddressValidator } from "@/app/lib/serverSide/openAIValidatorFunctions";
 
 const schema = buildSchema(`
   type PostcodeValidationResult {
@@ -13,7 +14,7 @@ const schema = buildSchema(`
   }
 
   type Query {
-    searchPostcode(suburb: String!, postcode: String!, state: String!): PostcodeValidationResult
+    searchPostcode(suburb: String!, postcode: String!, state: String!, useAi: Boolean!): PostcodeValidationResult
   }
 `);
 
@@ -39,7 +40,7 @@ interface AuspostParsedResponse {
   postcode: number;
 }
 
-async function callAustraliaPostApiPostcode(
+export async function callAustraliaPostApiPostcode(
   postcode: string
 ): Promise<AuspostParsedResponse[]> {
   try {
@@ -60,6 +61,19 @@ async function callAustraliaPostApiPostcode(
     // if we have no matching locations return an empty array
     if (!unpackedResponse) return [];
 
+    // if we have only one location parse appropriately
+    if (!Array.isArray(unpackedResponse)) {
+      const parsedResponse = [
+        {
+          location: unpackedResponse.location,
+          state: unpackedResponse.state,
+          postcode: unpackedResponse.postcode,
+        },
+      ];
+      return parsedResponse;
+    }
+
+    // if we have many candidate locations, parse appropriately
     const parsedResponse: AuspostParsedResponse[] = unpackedResponse.map(
       (res: {
         category: string;
@@ -78,11 +92,11 @@ async function callAustraliaPostApiPostcode(
 
     return parsedResponse;
   } catch (error) {
-    throw new Error(`${error}`);
+    throw new Error(`Error parsing AustPost API call: ${error}`);
   }
 }
 
-function checkSuburbAndStateAgainstApiResponse(
+export function checkSuburbAndStateAgainstApiResponse(
   suburb: string,
   inputState: string,
   response: AuspostParsedResponse[]
@@ -140,10 +154,11 @@ function checkSuburbAndStateAgainstApiResponse(
   };
 }
 
-type GrasphQlSearchPostcodeArgs = {
+type GraphQlSearchPostcodeArgs = {
   suburb: string;
   postcode: string;
   state: string;
+  useAi: boolean;
 };
 
 const rootValue = {
@@ -151,15 +166,23 @@ const rootValue = {
     suburb,
     postcode,
     state,
-  }: GrasphQlSearchPostcodeArgs) => {
-    const ausPostResponse = await callAustraliaPostApiPostcode(postcode);
-    const response = checkSuburbAndStateAgainstApiResponse(
-      suburb,
-      state,
-      ausPostResponse
-    );
+    useAi,
+  }: GraphQlSearchPostcodeArgs) => {
+    console.log("useAi", useAi);
+    if (!useAi) {
+      const ausPostResponse = await callAustraliaPostApiPostcode(postcode);
+      const response = checkSuburbAndStateAgainstApiResponse(
+        suburb,
+        state,
+        ausPostResponse
+      );
+      return response;
+    }
 
-    return response;
+    if (useAi) {
+      const response = await openAiAddressValidator(postcode, suburb, state);
+      return response;
+    }
   },
 };
 
@@ -190,6 +213,8 @@ export default async function handler(
     res.status(400).send("Bad request, missing state");
     return;
   }
+
+  console.log(variables);
 
   try {
     const response = await graphql({

@@ -2,8 +2,18 @@ import { gql } from "@apollo/client";
 import client from "./apolloClient";
 
 const SEARCH_POSTCODE_QUERY = gql`
-  query SearchPostcode($suburb: String!, $postcode: String!, $state: String!) {
-    searchPostcode(suburb: $suburb, postcode: $postcode, state: $state) {
+  query SearchPostcode(
+    $suburb: String!
+    $postcode: String!
+    $state: String!
+    $useAi: Boolean!
+  ) {
+    searchPostcode(
+      suburb: $suburb
+      postcode: $postcode
+      state: $state
+      useAi: $useAi
+    ) {
       valid
       reason
       badPostcode
@@ -21,15 +31,16 @@ export interface SearchPostcodeInterface {
   badSuburb: boolean;
 }
 
-export async function queryPostcodeValidationProxyNoAI(
+export async function queryPostcodeValidationProxy(
   suburb: string,
   postcode: string,
-  state: string
+  state: string,
+  useAi: boolean
 ): Promise<SearchPostcodeInterface> {
   try {
     const { data } = await client.query({
       query: SEARCH_POSTCODE_QUERY,
-      variables: { suburb, postcode, state },
+      variables: { suburb, postcode, state, useAi },
     });
 
     return {

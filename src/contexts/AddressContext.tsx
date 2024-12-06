@@ -1,8 +1,8 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { ApolloProvider } from "@apollo/client";
-import client from "@/app/lib/apolloClient";
-import { queryPostcodeValidationProxyNoAI } from "@/app/lib/postcodeValidatorFunctions";
+import client from "@/app/lib/clientSide/apolloClient";
+import { queryPostcodeValidationProxy } from "@/app/lib/clientSide/postcodeValidatorFunctions";
 
 // TODO implement badFields for red errored fields
 
@@ -23,7 +23,7 @@ interface AddressFormState {
 
 interface AddressContextInterface {
   state: AddressFormState;
-  handleInputChange: (name: string, value: string) => void;
+  handleInputChange: (name: string, value: string | boolean) => void;
   submitAddressForValidation: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
@@ -120,10 +120,10 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     return hasError;
   }
 
-  function handleInputChange(name: string, value: string | boolean | string[]) {
+  function handleInputChange(name: string, value: boolean | string) {
     setAddressFormData((prevData) => ({
       ...prevData,
-      [name]: value, // Dynamically update the corresponding field
+      [name]: value,
     }));
   }
 
@@ -137,6 +137,7 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     const postcode = formData.get("postcode")?.toString();
     const suburb = formData.get("suburb")?.toString();
     const geographicState = formData.get("geographicState")?.toString();
+    const useAi = formData.get("validationAi") === "on";
     const hasError = validateAddressFormClientSide(
       postcode,
       suburb,
@@ -145,10 +146,11 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     if (hasError) return;
 
     try {
-      const validationResponse = await queryPostcodeValidationProxyNoAI(
+      const validationResponse = await queryPostcodeValidationProxy(
         suburb!,
         postcode!,
-        geographicState!
+        geographicState!,
+        useAi!
       );
       handleInputChange("isValid", validationResponse.valid);
       handleInputChange("reasonInvalid", validationResponse.reason!);
