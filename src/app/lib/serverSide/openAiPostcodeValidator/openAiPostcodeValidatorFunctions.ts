@@ -153,7 +153,6 @@ async function openAiFunctionCallHandler(
   }
 }
 
-/*************  ✨ Codeium Command ⭐  *************/
 /**
  * Calls the openAI model to validate the provided postcode, suburb, and state.
  * The model will return a valid/invalid result, along with a reason if invalid.
@@ -163,7 +162,6 @@ async function openAiFunctionCallHandler(
  * @param state The state to validate
  * @returns A {SearchPostcodeInterface} object with the validation result
  */
-/******  03b1386a-f9fb-4de9-ba57-0ec7c092d088  *******/
 export async function openAiAddressValidator(
   postcode: string,
   suburb: string,

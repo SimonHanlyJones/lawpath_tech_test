@@ -6,8 +6,9 @@ import {
   callAustraliaPostApiPostcode,
   checkSuburbAndStateAgainstApiResponse,
 } from "@/app/lib/serverSide/austpostPostcodeValidator/austpostPostcodeValidatorFunctions";
-import { openAiAddressValidator } from "@/app/lib/serverSide/openAiPostcodeValidator/openAIValidatorFunctions";
+
 import { SearchPostcodeInterface } from "@/app/interfaces/SearchPostcodeInterface";
+import { openAiAddressValidator } from "@/app/lib/serverSide/openAiPostcodeValidator/openAiPostcodeValidatorFunctions";
 
 const schema = buildSchema(`
   type PostcodeValidationResult {
