@@ -1,8 +1,13 @@
 import { graphql, buildSchema } from "graphql";
-import axios from "axios";
-import { SearchPostcodeInterface } from "@/app/lib/clientSide/postcodeValidatorFunctions";
 import { NextApiRequest, NextApiResponse } from "next";
-import { openAiAddressValidator } from "@/app/lib/serverSide/openAIValidatorFunctions";
+
+import { GraphQlSearchPostcodeArgs } from "../../app/interfaces/GraphQlSearchPostcodeArgs";
+import {
+  callAustraliaPostApiPostcode,
+  checkSuburbAndStateAgainstApiResponse,
+} from "@/app/lib/serverSide/austpostPostcodeValidator/austpostPostcodeValidatorFunctions";
+import { openAiAddressValidator } from "@/app/lib/serverSide/openAiPostcodeValidator/openAIValidatorFunctions";
+import { SearchPostcodeInterface } from "@/app/interfaces/SearchPostcodeInterface";
 
 const schema = buildSchema(`
   type PostcodeValidationResult {
@@ -18,157 +23,26 @@ const schema = buildSchema(`
   }
 `);
 
-// interface AuspostPostcodeSearchApiResponse {
-//   localities: {
-//     locality: [
-//       {
-//         category: string;
-//         id: number;
-//         latitude: number;
-//         location: string;
-//         longitude: number;
-//         postcode: number;
-//         state: string;
-//       }
-//     ];
-//   };
-// }
-
-interface AuspostParsedResponse {
-  location: string;
-  state: string;
-  postcode: number;
-}
-
-export async function callAustraliaPostApiPostcode(
-  postcode: string
-): Promise<AuspostParsedResponse[]> {
-  try {
-    const response = await axios({
-      method: "get",
-      url: process.env.AUS_POST_POSTCODE_SEARCH_URL,
-      headers: {
-        "auth-key": process.env.AUS_POST_KEY,
-      },
-      params: {
-        q: postcode,
-      },
-    });
-
-    // unpack and parse response to get only what we need, the suburb, state and postcode
-    const unpackedResponse = response.data.localities.locality;
-
-    // if we have no matching locations return an empty array
-    if (!unpackedResponse) return [];
-
-    // if we have only one location parse appropriately
-    if (!Array.isArray(unpackedResponse)) {
-      const parsedResponse = [
-        {
-          location: unpackedResponse.location,
-          state: unpackedResponse.state,
-          postcode: unpackedResponse.postcode,
-        },
-      ];
-      return parsedResponse;
-    }
-
-    // if we have many candidate locations, parse appropriately
-    const parsedResponse: AuspostParsedResponse[] = unpackedResponse.map(
-      (res: {
-        category: string;
-        id: number;
-        latitude: number;
-        location: string;
-        longitude: number;
-        postcode: number;
-        state: string;
-      }) => ({
-        location: res.location,
-        state: res.state,
-        postcode: res.postcode,
-      })
-    );
-
-    return parsedResponse;
-  } catch (error) {
-    throw new Error(`Error parsing AustPost API call: ${error}`);
-  }
-}
-
-export function checkSuburbAndStateAgainstApiResponse(
-  suburb: string,
-  inputState: string,
-  response: AuspostParsedResponse[]
-): SearchPostcodeInterface {
-  // if there are no matching postcodes
-  if (response.length === 0) {
-    return {
-      valid: false,
-      reason:
-        "the provided postcode does not match any suburb. Please check the postcode.",
-      badPostcode: true,
-      badState: true,
-      badSuburb: true,
-    };
-  }
-
-  // search for perfect match
-  for (const { location, state } of response) {
-    if (
-      location.toLowerCase() === suburb.toLowerCase() &&
-      state.toLowerCase() === inputState.toLowerCase()
-    ) {
-      return {
-        valid: true,
-        reason: "",
-        badPostcode: false,
-        badState: false,
-        badSuburb: false,
-      };
-    }
-  }
-
-  // search for partial match -> suburb and postcode, but wrong state
-  for (const { location } of response) {
-    if (location.toLowerCase() === suburb.toLowerCase()) {
-      return {
-        valid: false,
-        reason:
-          "The provided postcode and suburb does not appear to exist in the provided state. Please check you have entered the correct state.",
-        badPostcode: false,
-        badState: true,
-        badSuburb: false,
-      };
-    }
-  }
-
-  // case for no match between postcode and suburb
-  return {
-    valid: false,
-    reason:
-      "the provided suburb does not appear to match the postcode. Please check the postcode and suburb.",
-    badPostcode: true,
-    badState: true,
-    badSuburb: true,
-  };
-}
-
-type GraphQlSearchPostcodeArgs = {
-  suburb: string;
-  postcode: string;
-  state: string;
-  useAi: boolean;
-};
-
+/**
+ * Resolves a postcode search by utilizing either the Australia Post API or an AI validator,
+ * based on the `useAi` flag. If `useAi` is false, it calls the Australia Post API to verify
+ * the postcode, suburb, and state, and returns the validation result. If `useAi` is true, it
+ * leverages an AI-based validator to perform the validation and returns the result.
+ *
+ * @param {GraphQlSearchPostcodeArgs} args - The arguments containing the suburb, postcode,
+ * state, and a flag to determine whether to use AI for validation.
+ * @returns {Promise<SearchPostcodeInterface>} - The validation result containing validity
+ * status and error reasons, if any.
+ */
 const rootValue = {
   searchPostcode: async ({
     suburb,
     postcode,
     state,
     useAi,
-  }: GraphQlSearchPostcodeArgs) => {
-    console.log("useAi", useAi);
+  }: GraphQlSearchPostcodeArgs): Promise<
+    SearchPostcodeInterface | undefined
+  > => {
     if (!useAi) {
       const ausPostResponse = await callAustraliaPostApiPostcode(postcode);
       const response = checkSuburbAndStateAgainstApiResponse(
@@ -186,6 +60,48 @@ const rootValue = {
   },
 };
 
+/**
+ * API handler for GraphQL queries to validate Australian postcodes.
+ *
+ * This handler processes POST requests with a GraphQL query that validates
+ * postcodes, suburbs, and states using either the Australia Post API or an
+ * AI-based validator. The API ensures the presence of required variables
+ * (suburb, postcode, state) in the request body before executing the query.
+ *
+ * Supported query:
+ * - `searchPostcode`: Validates a postcode, suburb, and state using either the
+ *   Australia Post API or AI, based on the `useAi` flag.
+ *
+ * @param {NextApiRequest} req - The HTTP request object from Next.js.
+ *    - Expected body:
+ *      - `query`: The GraphQL query string.
+ *      - `variables`: An object containing:
+ *          - `suburb`: Name of the suburb (required).
+ *          - `postcode`: Postcode to validate (required).
+ *          - `state`: State abbreviation (required).
+ *          - `useAi`: Boolean flag to use AI for validation (optional).
+ * @param {NextApiResponse} res - The HTTP response object from Next.js.
+ *    - Responds with:
+ *      - 200: JSON response with GraphQL execution results if successful.
+ *      - 400: Bad request if required fields are missing or malformed.
+ *      - 405: Method not allowed if the request method is not POST.
+ *      - 500: Internal server error if GraphQL execution fails.
+ *
+ * Example usage:
+ * ```json
+ * {
+ *   "query": "query ($suburb: String!, $postcode: String!, $state: String!, $useAi: Boolean!) { searchPostcode(suburb: $suburb, postcode: $postcode, state: $state, useAi: $useAi) { valid reason badPostcode badState badSuburb } }",
+ *   "variables": {
+ *     "suburb": "Melbourne",
+ *     "postcode": "3000",
+ *     "state": "VIC",
+ *     "useAi": false
+ *   }
+ * }
+ * ```
+ *
+ * @returns {void}
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -213,8 +129,6 @@ export default async function handler(
     res.status(400).send("Bad request, missing state");
     return;
   }
-
-  console.log(variables);
 
   try {
     const response = await graphql({

@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 import client from "./apolloClient";
+import { SearchPostcodeInterface } from "../../interfaces/SearchPostcodeInterface";
 
 const SEARCH_POSTCODE_QUERY = gql`
   query SearchPostcode(
@@ -22,14 +23,6 @@ const SEARCH_POSTCODE_QUERY = gql`
     }
   }
 `;
-
-export interface SearchPostcodeInterface {
-  valid: boolean;
-  reason: string | undefined;
-  badPostcode: boolean;
-  badState: boolean;
-  badSuburb: boolean;
-}
 
 export async function queryPostcodeValidationProxy(
   suburb: string,

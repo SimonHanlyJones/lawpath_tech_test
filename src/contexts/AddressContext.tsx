@@ -1,40 +1,26 @@
 "use client";
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { ApolloProvider } from "@apollo/client";
 import client from "@/app/lib/clientSide/apolloClient";
 import { queryPostcodeValidationProxy } from "@/app/lib/clientSide/postcodeValidatorFunctions";
-
-// TODO implement badFields for red errored fields
-
-interface AddressFormState {
-  validationAi: boolean;
-  postcode: string;
-  suburb: string;
-  geographicState: string;
-  postcodeError: string;
-  suburbError: string;
-  geographicStateError: string;
-  formError: string;
-  isLoading: boolean;
-  isValid: boolean | undefined;
-  reasonInvalid: string | undefined;
-  badFields: string[];
-}
-
-interface AddressContextInterface {
-  state: AddressFormState;
-  handleInputChange: (name: string, value: string | boolean) => void;
-  submitAddressForValidation: (event: React.FormEvent<HTMLFormElement>) => void;
-}
+import { AddressFormState } from "../app/interfaces/AddressFormState";
+import { AddressContextInterface } from "../app/interfaces/AddressContextInterface";
+import { AddressProviderProps } from "../app/interfaces/AddressProviderProps";
 
 const AddressContext = createContext<AddressContextInterface | undefined>(
   undefined
 );
 
-interface AddressProviderProps {
-  children: ReactNode;
-}
-
+/**
+ * AddressProvider is a React functional component that provides context for managing address form data.
+ * It uses an ApolloProvider to set up the GraphQL client and supplies the AddressContext to its children.
+ *
+ * It manages address form state, including fields for postcode, suburb, geographic state, and various error states.
+ * It includes methods for handling form input changes, client-side form validation, and submitting the form
+ * for further validation via a GraphQL query.
+ *
+ * @param {React.ReactNode} children - The child components that will have access to the AddressContext.
+ */
 export const AddressProvider: React.FC<AddressProviderProps> = ({
   children,
 }) => {
@@ -53,6 +39,16 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     badFields: [],
   });
 
+  /**
+   * Validate the address form fields client-side, checking for empty fields,
+   * postcode length and contents, suburb contents, and geographic state selection.
+   * Updates the addressFormData state with any errors found.
+   *
+   * @param {string | undefined} postcode - The postcode input
+   * @param {string | undefined} suburb - The suburb input
+   * @param {string | undefined} geographicState - The geographic state input
+   * @returns {boolean} - Whether any errors were found.
+   */
   function validateAddressFormClientSide(
     postcode: string | undefined,
     suburb: string | undefined,
@@ -120,6 +116,12 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     return hasError;
   }
 
+  /**
+   * Updates the state of the address form data
+   *
+   * @param {string} name - The name of the field to update
+   * @param {boolean|string} value - The new value of the field
+   */
   function handleInputChange(name: string, value: boolean | string) {
     setAddressFormData((prevData) => ({
       ...prevData,
@@ -127,6 +129,15 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     }));
   }
 
+  /*************  ✨ Codeium Command ⭐  *************/
+  /**
+   * Handles the submission of the address form. Prevents default form submission, performs
+   * clientside validation, and if valid, calls the postcode validation proxy to validate the
+   * postcode, suburb and state. If an error occurs during validation, an error is thrown.
+   *
+   * @param {React.FormEvent<HTMLFormElement>} event - The form submission event
+   */
+  /******  fac753ec-512b-485d-98fe-adcf2f58373c  *******/
   async function submitAddressForValidation(
     event: React.FormEvent<HTMLFormElement>
   ) {
@@ -177,6 +188,15 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
   );
 };
 
+/**
+ * A hook that returns the current address form state and functions to update it.
+ * Use this hook to access the state and functions of the AddressProvider.
+ *
+ * @returns {AddressContextInterface} - An object containing the state and functions
+ *   of the AddressProvider.
+ *
+ * @throws {Error} - If the hook is used outside of an AddressProvider component.
+ */
 export const useAddress = () => {
   const context = useContext(AddressContext);
   if (!context) {
