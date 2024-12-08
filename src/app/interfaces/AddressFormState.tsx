@@ -6,7 +6,6 @@ export interface AddressFormState {
   postcodeError: string;
   suburbError: string;
   geographicStateError: string;
-  formError: string;
   isLoading: boolean;
   isValid: boolean | undefined;
   reasonInvalid: string | undefined;

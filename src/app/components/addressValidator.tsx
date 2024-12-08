@@ -53,6 +53,7 @@ function AddressValidator() {
                 )
               }
               id="postcodeInput"
+              className={addressContext.state.badPostcode ? "input-error" : ""}
             />
             <span className="client-error-text">
               {addressContext.state.postcodeError}
@@ -74,6 +75,7 @@ function AddressValidator() {
                 )
               }
               id="suburbInput"
+              className={addressContext.state.badSuburb ? "input-error" : ""}
             />
             <span className="client-error-text">
               {addressContext.state.suburbError}
@@ -93,6 +95,11 @@ function AddressValidator() {
                   event.target.name,
                   event.target.value
                 )
+              }
+              className={
+                addressContext.state.badGeographicState
+                  ? "input-dropdown-error"
+                  : ""
               }
             >
               <option value="" disabled>

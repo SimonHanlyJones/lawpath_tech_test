@@ -32,7 +32,6 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     postcodeError: "",
     suburbError: "",
     geographicStateError: "",
-    formError: "",
     isLoading: false,
     isValid: undefined,
     reasonInvalid: undefined,
@@ -125,7 +124,7 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
    * @throws {Error} If the field name is not valid.
    */
   function handleInputChange(name: string, value: boolean | string) {
-    // Get valid keys dynamically from the addressFormData
+    // Check we have tried to update a valid field
     const validNames = Object.keys(addressFormData) as Array<
       keyof AddressFormState
     >;
@@ -134,12 +133,33 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
       throw new Error(`Invalid field name provided: ${name}`);
     }
 
-    setAddressFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    // If we are updating an input field, reset our errors and validation results
+    if (
+      name === "validationAi" ||
+      name === "geographicState" ||
+      name === "suburb" ||
+      name === "postcode"
+    ) {
+      setAddressFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+        postcodeError: "",
+        suburbError: "",
+        geographicStateError: "",
+        isValid: undefined,
+        reasonInvalid: undefined,
+        badGeographicState: false,
+        badPostcode: false,
+        badSuburb: false,
+      }));
 
-    // TODO clear input errors on field change
+      // otherwise just update the field
+    } else {
+      setAddressFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   }
 
   // TODO add JSDocString

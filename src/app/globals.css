@@ -120,7 +120,9 @@ button:focus {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 2rem;
   width: 100%;
+  /* TODO think about this */
   max-width: 400px;
+  min-width: 400px;
 }
 
 .input-parent-div {
@@ -159,4 +161,16 @@ button:focus {
 
 .status-box .icon {
   font-size: 1.25rem;
+}
+
+input.input-error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+select.input-dropdown-error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
 }
