@@ -1,6 +1,10 @@
 "use client";
 import React from "react";
 import { useAddress } from "../../contexts/AddressContext";
+import { Checkbox } from "./addressValidatorComponents/Checkbox";
+import { InputField } from "./addressValidatorComponents/InputField";
+import { Dropdown } from "./addressValidatorComponents/Dropdown";
+import { ValidationStatus } from "./addressValidatorComponents/ValidationStatus";
 
 function AddressValidator() {
   const addressContext = useAddress();
@@ -17,140 +21,56 @@ function AddressValidator() {
   ];
 
   return (
-    <div>
-      <div className="form-container">
-        <h1>Australian Address Validator</h1>
-        <form onSubmit={addressContext.submitAddressForValidation}>
-          <div className="checkbox-parent-div">
-            <input
-              className="checkbox-label"
-              type="checkbox"
-              id="validatorCheckbox"
-              name="validationAi"
-              onChange={(event) =>
-                addressContext.handleInputChange(
-                  event.target.name,
-                  event.target.checked
-                )
-              }
-            />
-            <label className="checkbox-label" htmlFor="validatorCheckbox">
-              API Validation
-            </label>
-          </div>
-          <div className="input-parent-div">
-            <label className="text-label" htmlFor="postcodeInput">
-              Postcode
-            </label>
-            <input
-              type="text"
-              name="postcode"
-              placeholder="Enter postcode"
-              onChange={(event) =>
-                addressContext.handleInputChange(
-                  event.target.name,
-                  event.target.value
-                )
-              }
-              id="postcodeInput"
-              className={addressContext.state.badPostcode ? "input-error" : ""}
-            />
-            <span className="client-error-text">
-              {addressContext.state.postcodeError}
-            </span>
-          </div>
+    <div className="form-container">
+      <h1>Australian Address Validator</h1>
+      <form onSubmit={addressContext.submitAddressForValidation}>
+        <Checkbox
+          id="validatorCheckbox"
+          name="validationAi"
+          label="API Validation"
+          checked={addressContext.state.validationAi}
+          onChange={addressContext.handleInputChange}
+        />
 
-          <div className="input-parent-div">
-            <label className="text-label" htmlFor="suburbInput">
-              Suburb
-            </label>
-            <input
-              type="text"
-              placeholder="Enter suburb"
-              name="suburb"
-              onChange={(event) =>
-                addressContext.handleInputChange(
-                  event.target.name,
-                  event.target.value
-                )
-              }
-              id="suburbInput"
-              className={addressContext.state.badSuburb ? "input-error" : ""}
-            />
-            <span className="client-error-text">
-              {addressContext.state.suburbError}
-            </span>
-          </div>
+        <InputField
+          id="postcodeInput"
+          name="postcode"
+          label="Postcode"
+          placeholder="Enter postcode"
+          value={addressContext.state.postcode}
+          error={addressContext.state.postcodeError}
+          onChange={addressContext.handleInputChange}
+        />
 
-          <div className="input-parent-div">
-            <label className="text-label" htmlFor="stateDropdown">
-              State
-            </label>
-            <select
-              id="stateDropdown"
-              value={addressContext.state.geographicState}
-              name="geographicState"
-              onChange={(event) =>
-                addressContext.handleInputChange(
-                  event.target.name,
-                  event.target.value
-                )
-              }
-              className={
-                addressContext.state.badGeographicState
-                  ? "input-dropdown-error"
-                  : ""
-              }
-            >
-              <option value="" disabled>
-                Select state
-              </option>
-              {australianStates.map((state) => (
-                <option key={state.value} value={state.value}>
-                  {state.label}
-                </option>
-              ))}
-            </select>
-            <span className="client-error-text">
-              {addressContext.state.geographicStateError}
-            </span>
-          </div>
-          <div className="validation-results">
-            <div>
-              {addressContext.state.isValid !== undefined && (
-                <div
-                  className={`status-box ${
-                    addressContext.state.isValid ? "valid" : "invalid"
-                  }`}
-                >
-                  {addressContext.state.isValid ? (
-                    <>
-                      <span className="icon">✔</span>
-                      <span>Address Valid</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="icon">✘</span>
-                      <span>Address Not Valid</span>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
+        <InputField
+          id="suburbInput"
+          name="suburb"
+          label="Suburb"
+          placeholder="Enter suburb"
+          value={addressContext.state.suburb}
+          error={addressContext.state.suburbError}
+          onChange={addressContext.handleInputChange}
+        />
 
-            {addressContext.state.isValid &&
-            addressContext.state.reasonInvalid! &&
-            addressContext.state.reasonInvalid.length > 0 ? (
-              <span></span>
-            ) : (
-              <span>{addressContext.state.reasonInvalid}</span>
-            )}
-          </div>
-          <div>
-            <button type="submit">Submit</button>
-          </div>
-        </form>
-      </div>
+        <Dropdown
+          id="stateDropdown"
+          name="geographicState"
+          label="State"
+          options={australianStates}
+          value={addressContext.state.geographicState}
+          error={addressContext.state.geographicStateError}
+          onChange={addressContext.handleInputChange}
+        />
+
+        <ValidationStatus
+          isValid={addressContext.state.isValid}
+          reasonInvalid={addressContext.state.reasonInvalid}
+        />
+
+        <button type="submit" disabled={addressContext.state.isLoading}>
+          Submit
+        </button>
+      </form>
     </div>
   );
 }

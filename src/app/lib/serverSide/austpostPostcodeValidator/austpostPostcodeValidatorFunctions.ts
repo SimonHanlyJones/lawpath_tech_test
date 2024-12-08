@@ -1,5 +1,5 @@
-import { ParsedResponseFromAusPost } from "@/app/interfaces/ParsedResponseFromAusPost";
-import { SearchPostcodeInterface } from "@/app/interfaces/SearchPostcodeInterface";
+import { ParsedResponseFromAusPost } from "@/app/interfaces/backend/ParsedResponseFromAusPost";
+import { SearchPostcodeInterface } from "@/app/interfaces/frontend-BackendCommunication/SearchPostcodeInterface";
 import axios from "axios";
 
 /**

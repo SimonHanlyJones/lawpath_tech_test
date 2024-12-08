@@ -7,7 +7,7 @@ import {
 } from "openai/src/resources/chat/completions.js";
 
 import { z } from "zod";
-import { SearchPostcodeInterface } from "../../../interfaces/SearchPostcodeInterface";
+import { SearchPostcodeInterface } from "../../../interfaces/frontend-BackendCommunication/SearchPostcodeInterface";
 import { callAustraliaPostApiPostcode } from "../austpostPostcodeValidator/austpostPostcodeValidatorFunctions";
 
 const openai = new OpenAI({

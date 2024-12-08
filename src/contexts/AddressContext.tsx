@@ -3,9 +3,9 @@ import React, { createContext, useContext, useState } from "react";
 import { ApolloProvider } from "@apollo/client";
 import client from "@/app/lib/clientSide/apolloClient";
 import { queryPostcodeValidationProxy } from "@/app/lib/clientSide/postcodeValidatorFunctions";
-import { AddressFormState } from "../app/interfaces/AddressFormState";
-import { AddressContextInterface } from "../app/interfaces/AddressContextInterface";
-import { AddressProviderProps } from "../app/interfaces/AddressProviderProps";
+import { AddressFormState } from "../app/interfaces/contextProps/AddressFormState";
+import { AddressContextInterface } from "../app/interfaces/contextProps/AddressContextInterface";
+import { AddressProviderProps } from "../app/interfaces/contextProps/AddressProviderProps";
 
 const AddressContext = createContext<AddressContextInterface | undefined>(
   undefined
@@ -167,6 +167,10 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     event: React.FormEvent<HTMLFormElement>
   ) {
     event.preventDefault();
+    setAddressFormData((prevData) => ({
+      ...prevData,
+      isLoading: true,
+    }));
 
     // perform clientside validation
     const formData = new FormData(event.currentTarget);
@@ -193,7 +197,15 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
       handleInputChange("badPostcode", validationResponse.badPostcode!);
       handleInputChange("badGeographicState", validationResponse.badState!);
       handleInputChange("badSuburb", validationResponse.badSuburb!);
+      setAddressFormData((prevData) => ({
+        ...prevData,
+        isLoading: false,
+      }));
     } catch (error: unknown) {
+      setAddressFormData((prevData) => ({
+        ...prevData,
+        isLoading: true,
+      }));
       throw new Error(`${error}`);
     }
   }

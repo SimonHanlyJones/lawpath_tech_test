@@ -1,5 +1,5 @@
 "use client";
-import { AddressFormState } from "@/app/interfaces/AddressFormState";
+import { AddressFormState } from "@/app/interfaces/contextProps/AddressFormState";
 import React from "react";
 
 export interface AddressContextInterface {
