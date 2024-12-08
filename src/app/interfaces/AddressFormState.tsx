@@ -1,6 +1,3 @@
-"use client";
-// TODO implement badFields for red errored fields
-
 export interface AddressFormState {
   validationAi: boolean;
   postcode: string;
@@ -13,5 +10,7 @@ export interface AddressFormState {
   isLoading: boolean;
   isValid: boolean | undefined;
   reasonInvalid: string | undefined;
-  badFields: string[];
+  badGeographicState: boolean;
+  badPostcode: boolean;
+  badSuburb: boolean;
 }

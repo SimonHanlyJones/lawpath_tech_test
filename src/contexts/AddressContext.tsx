@@ -36,7 +36,9 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     isLoading: false,
     isValid: undefined,
     reasonInvalid: undefined,
-    badFields: [],
+    badGeographicState: false,
+    badPostcode: false,
+    badSuburb: false,
   });
 
   /**
@@ -117,27 +119,26 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
   }
 
   /**
-   * Updates the state of the address form data
-   *
-   * @param {string} name - The name of the field to update
-   * @param {boolean|string} value - The new value of the field
+   * Handles updating the address form state with user input.
+   * @param {string} name The name of the field to update, must be a valid key in the AddressFormState interface.
+   * @param {boolean|string} value The new value of the field.
+   * @throws {Error} If the field name is not valid.
    */
   function handleInputChange(name: string, value: boolean | string) {
+    // Get valid keys programmatically
+    const validNames = Object.keys({} as AddressFormState);
+
+    if (!validNames.includes(name)) {
+      throw new Error(`Invalid field name provided: ${name}`);
+    }
+
     setAddressFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   }
 
-  /*************  ✨ Codeium Command ⭐  *************/
-  /**
-   * Handles the submission of the address form. Prevents default form submission, performs
-   * clientside validation, and if valid, calls the postcode validation proxy to validate the
-   * postcode, suburb and state. If an error occurs during validation, an error is thrown.
-   *
-   * @param {React.FormEvent<HTMLFormElement>} event - The form submission event
-   */
-  /******  fac753ec-512b-485d-98fe-adcf2f58373c  *******/
+  // TODO add JSDocString
   async function submitAddressForValidation(
     event: React.FormEvent<HTMLFormElement>
   ) {
@@ -166,7 +167,7 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
       handleInputChange("isValid", validationResponse.valid);
       handleInputChange("reasonInvalid", validationResponse.reason!);
       handleInputChange("badPostcode", validationResponse.badPostcode!);
-      handleInputChange("badState", validationResponse.badState!);
+      handleInputChange("badGeographicState", validationResponse.badState!);
       handleInputChange("badSuburb", validationResponse.badSuburb!);
     } catch (error: unknown) {
       throw new Error(`${error}`);

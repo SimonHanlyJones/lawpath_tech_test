@@ -147,6 +147,12 @@ async function openAiFunctionCallHandler(
     const validationOutput: SearchPostcodeInterface = JSON.parse(
       response.choices[0].message.content
     );
+    if (
+      validationOutput.reason === null ||
+      validationOutput.reason === undefined
+    ) {
+      validationOutput.reason = "";
+    }
     return validationOutput;
   } catch (error) {
     throw new Error(`openAiModel output did not match scheme: ${error}`);
