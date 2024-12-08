@@ -1,13 +1,13 @@
 import { graphql, buildSchema } from "graphql";
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { GraphQlSearchPostcodeArgs } from "../../app/interfaces/frontend-BackendCommunication/GraphQlSearchPostcodeArgs";
+import { GraphQlSearchPostcodeArgs } from "../../app/interfaces/frontendBackendCommunication/GraphQlSearchPostcodeArgs";
 import {
   callAustraliaPostApiPostcode,
   checkSuburbAndStateAgainstApiResponse,
 } from "@/app/lib/serverSide/austpostPostcodeValidator/austpostPostcodeValidatorFunctions";
 
-import { SearchPostcodeInterface } from "@/app/interfaces/frontend-BackendCommunication/SearchPostcodeInterface";
+import { SearchPostcodeInterface } from "@/app/interfaces/frontendBackendCommunication/SearchPostcodeInterface";
 import { openAiAddressValidator } from "@/app/lib/serverSide/openAiPostcodeValidator/openAiPostcodeValidatorFunctions";
 
 const schema = buildSchema(`

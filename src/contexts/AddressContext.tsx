@@ -178,12 +178,19 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     const suburb = formData.get("suburb")?.toString();
     const geographicState = formData.get("geographicState")?.toString();
     const useAi = formData.get("validationAi") === "on";
+
     const hasError = validateAddressFormClientSide(
       postcode,
       suburb,
       geographicState
     );
-    if (hasError) return;
+    if (hasError) {
+      setAddressFormData((prevData) => ({
+        ...prevData,
+        isLoading: false,
+      }));
+      return;
+    }
 
     try {
       const validationResponse = await queryPostcodeValidationProxy(

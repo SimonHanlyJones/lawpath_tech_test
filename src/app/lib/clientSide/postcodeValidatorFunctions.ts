@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 import client from "./apolloClient";
-import { SearchPostcodeInterface } from "../../interfaces/frontend-BackendCommunication/SearchPostcodeInterface";
+import { SearchPostcodeInterface } from "../../interfaces/frontendBackendCommunication/SearchPostcodeInterface";
 
 const SEARCH_POSTCODE_QUERY = gql`
   query SearchPostcode(

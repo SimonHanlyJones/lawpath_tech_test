@@ -1,41 +1,141 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Australian Address Validator
 
-# TODO
+This project is a Next.js application that validates Australian addresses using APIs. It integrates with the Australia Post API for postcode lookups and OpenAI for additional processing.
 
-get testing framework up and running
-type to filter for state
+## Features
+
+- Validate Australian addresses with postcode and suburb.
+- Integrates with Australia Post API for address verification.
+- Simple and responsive user interface.
+- GraphQL serverless function powered by Apollo Client.
+- Custom provider for address validator form state management.
+- OpenAI integration with custom tool calling.
+
+## Requirements
+
+- Node.js (version 16 or higher recommended)
+- npm or yarn package manager
+- API keys for Australia Post and OpenAI
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clone this repository
+git clone https://github.com/SimonHanlyJones/lawpath_tech_test
+
+# Navigate to the project directory
+cd lawpath_tech_test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Install project dependencies using npm
+npm install
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Or use yarn
+yarn install
+```
 
-## Learn More
+### 3. Set Up Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+Create a `.env.local` file in the root of your project directory and add the following variables:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```env
+AUS_POST_KEY=<your-australia-post-api-key>
+AUS_POST_POSTCODE_SEARCH_URL=https://digitalapi.auspost.com.au/postcode/search
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+OPENAI_KEY=<your-openai-api-key>
+```
 
-## Deploy on Vercel
+Replace `<your-australia-post-api-key>` and `<your-openai-api-key>` with your respective API keys.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 4. Run the Application
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Start the development server
+npm run dev
+
+# Or use yarn
+yarn dev
+```
+
+The application will be available at `http://localhost:3000`.
+
+---
+
+## Running Integration Tests
+
+To run integration tests, follow these steps:
+
+1. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+2. Open a new terminal and run the tests:
+   ```bash
+   npm test
+   ```
+
+This will execute the integration tests against the development server.
+
+---
+
+## Deployment
+
+### Vercel Deployment
+
+This project is optimized for deployment on Vercel. Follow these steps to deploy:
+
+1. Push your repository to a version control platform (e.g., GitHub).
+2. Connect your repository to [Vercel](https://vercel.com/).
+3. Set the environment variables (`AUS_POST_KEY`, `AUS_POST_POSTCODE_SEARCH_URL`, and `OPENAI_KEY`) in the Vercel dashboard under the project settings.
+4. Deploy the project via the Vercel dashboard.
+
+---
+
+## API Key Information
+
+### Australia Post API
+
+- [Australia Post API Documentation](https://developers.auspost.com.au/)
+- Used for postcode and suburb validation.
+
+### OpenAI API
+
+- [OpenAI API Documentation](https://platform.openai.com/docs/)
+- Used for additional address processing (if applicable).
+
+---
+
+## Scripts
+
+| Command         | Description                       |
+| --------------- | --------------------------------- |
+| `npm run dev`   | Start the development server.     |
+| `npm run build` | Build the project for production. |
+| `npm start`     | Run the production build.         |
+
+---
+
+## Directory Structure
+
+```plaintext
+.
+├── app                  # Core application directory
+│   ├── components       # Reusable React components
+│   ├── fonts            # Custom fonts
+│   ├── interfaces       # TypeScript interfaces
+│   ├── lib              # Library code
+│   ├── test             # Test files
+│   ├── globals.css
+├── contexts             # Context API for state management
+├── pages                # Next.js API routes
+└── public               # Public assets
+```
