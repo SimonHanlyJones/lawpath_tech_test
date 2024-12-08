@@ -108,32 +108,41 @@ function AddressValidator() {
               {addressContext.state.geographicStateError}
             </span>
           </div>
+          <div className="validation-results">
+            <div>
+              {addressContext.state.isValid !== undefined && (
+                <div
+                  className={`status-box ${
+                    addressContext.state.isValid ? "valid" : "invalid"
+                  }`}
+                >
+                  {addressContext.state.isValid ? (
+                    <>
+                      <span className="icon">✔</span>
+                      <span>Address Valid</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="icon">✘</span>
+                      <span>Address Not Valid</span>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {addressContext.state.isValid &&
+            addressContext.state.reasonInvalid! &&
+            addressContext.state.reasonInvalid.length > 0 ? (
+              <span></span>
+            ) : (
+              <span>{addressContext.state.reasonInvalid}</span>
+            )}
+          </div>
           <div>
             <button type="submit">Submit</button>
           </div>
         </form>
-        <div>
-          {addressContext.state.isValid ? (
-            <span>Address valid</span>
-          ) : (
-            <span></span>
-          )}
-
-          {addressContext.state.isValid != undefined &&
-          !addressContext.state.isValid ? (
-            <span>Address Not valid</span>
-          ) : (
-            <span></span>
-          )}
-
-          {addressContext.state.isValid &&
-          addressContext.state.reasonInvalid! &&
-          addressContext.state.reasonInvalid.length > 0 ? (
-            <span></span>
-          ) : (
-            <span>{addressContext.state.reasonInvalid}</span>
-          )}
-        </div>
       </div>
     </div>
   );

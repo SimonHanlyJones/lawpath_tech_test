@@ -85,7 +85,7 @@ export function checkSuburbAndStateAgainstApiResponse(
     return {
       valid: false,
       reason:
-        "the provided postcode does not match any suburb. Please check the postcode.",
+        "The provided postcode does not match any suburb. Please check the postcode.",
       badPostcode: true,
       badState: true,
       badSuburb: true,
@@ -126,7 +126,7 @@ export function checkSuburbAndStateAgainstApiResponse(
   return {
     valid: false,
     reason:
-      "the provided suburb does not appear to match the postcode. Please check the postcode and suburb.",
+      "The provided suburb does not appear to match the postcode. Please check the postcode and suburb.",
     badPostcode: true,
     badState: true,
     badSuburb: true,

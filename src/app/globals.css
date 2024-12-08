@@ -126,3 +126,37 @@ button:focus {
 .input-parent-div {
   margin-bottom: 1.5rem;
 }
+.validation-results {
+  margin-bottom: 1.5rem;
+}
+
+#validation-failed-text {
+  color: red;
+  margin-top: 0.25rem;
+}
+
+.status-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.status-box.valid {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.status-box.invalid {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+.status-box .icon {
+  font-size: 1.25rem;
+}
