@@ -125,10 +125,12 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
    * @throws {Error} If the field name is not valid.
    */
   function handleInputChange(name: string, value: boolean | string) {
-    // Get valid keys programmatically
-    const validNames = Object.keys({} as AddressFormState);
+    // Get valid keys dynamically from the addressFormData
+    const validNames = Object.keys(addressFormData) as Array<
+      keyof AddressFormState
+    >;
 
-    if (!validNames.includes(name)) {
+    if (!validNames.includes(name as keyof AddressFormState)) {
       throw new Error(`Invalid field name provided: ${name}`);
     }
 
@@ -136,6 +138,8 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
       ...prevData,
       [name]: value,
     }));
+
+    // TODO clear input errors on field change
   }
 
   // TODO add JSDocString
