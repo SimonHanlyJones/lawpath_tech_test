@@ -181,20 +181,24 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
         geographicState!,
         useAi!
       );
-      handleInputChange("isValid", validationResponse.valid);
-      handleInputChange("reasonInvalid", validationResponse.reason!);
-      handleInputChange("badPostcode", validationResponse.badPostcode!);
-      handleInputChange("badGeographicState", validationResponse.badState!);
-      handleInputChange("badSuburb", validationResponse.badSuburb!);
+
       setAddressFormData((prevData) => ({
         ...prevData,
+        isValid: validationResponse.valid,
+        reasonInvalid: validationResponse.reason,
+        badPostcode: validationResponse.badPostcode,
+        badGeographicState: validationResponse.badState,
+        badSuburb: validationResponse.badSuburb,
         isLoading: false,
       }));
     } catch (error: unknown) {
       setAddressFormData((prevData) => ({
         ...prevData,
-        isLoading: true,
+        isValid: false,
+        reasonInvalid: "Something went wrong. Please try again.",
+        isLoading: false,
       }));
+      // TODO add display error
       throw new Error(`${error}`);
     }
   }
