@@ -57,7 +57,7 @@ async function callAusPostOpenAiModel(
     model: "gpt-4o",
     messages: messages,
     tools: tools,
-    // function_call: { name: "callAustraliaPostApiPostcode" },
+
     response_format: zodResponseFormat(
       SearchPostcodeInterfaceZod,
       "validation_result"
@@ -66,7 +66,6 @@ async function callAusPostOpenAiModel(
   });
 }
 
-/*************  ✨ Codeium Command ⭐  *************/
 /**
  * Handles the openAI chat completion process, including making initial calls and following up on any function calls
  * made by the model. The function will follow up on function calls until the model returns a result or maxes out
@@ -75,7 +74,6 @@ async function callAusPostOpenAiModel(
  * @param {Array<ChatCompletionMessageParam>} messages - An array of message parameters to be sent to the OpenAI chat completion.
  * @returns {Promise<SearchPostcodeInterface>} - A promise that resolves with the response from the OpenAI chat completion, in the format of SearchPostcodeInterface.
  */
-/******  4fdf21a6-2263-4767-9d18-16d40e4f9dbf  *******/
 async function openAiFunctionCallHandler(
   messages: Array<ChatCompletionMessageParam>
 ): Promise<SearchPostcodeInterface> {
