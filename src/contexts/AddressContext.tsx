@@ -41,83 +41,6 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
   });
 
   /**
-   * Validate the address form fields client-side, checking for empty fields,
-   * postcode length and contents, suburb contents, and geographic state selection.
-   * Updates the addressFormData state with any errors found.
-   *
-   * @param {string | undefined} postcode - The postcode input
-   * @param {string | undefined} suburb - The suburb input
-   * @param {string | undefined} geographicState - The geographic state input
-   * @returns {boolean} - Whether any errors were found.
-   */
-  function validateAddressFormClientSide(
-    postcode: string | undefined,
-    suburb: string | undefined,
-    geographicState: string | undefined
-  ): boolean {
-    let hasError = false;
-
-    if (!postcode || postcode === "") {
-      setAddressFormData((prevData) => ({
-        ...prevData,
-        postcodeError: "A postcode is required. Please enter a postcode.",
-      }));
-      hasError = true;
-    } else if (postcode && 4 !== postcode.length) {
-      setAddressFormData((prevData) => ({
-        ...prevData,
-        postcodeError:
-          "The postcode you have entered is not valid, it must be 4 digits long.",
-      }));
-      hasError = true;
-    } else if (!/^\d+$/.test(postcode)) {
-      setAddressFormData((prevData) => ({
-        ...prevData,
-        postcodeError: "The postcode must contain only digits.",
-      }));
-      hasError = true;
-    } else {
-      setAddressFormData((prevData) => ({
-        ...prevData,
-        postcodeError: "",
-      }));
-    }
-
-    if (!suburb || suburb === "") {
-      setAddressFormData((prevData) => ({
-        ...prevData,
-        suburbError: "A suburb is required. Please enter a suburb.",
-      }));
-    } else if (!/^[a-zA-Z\s]+$/.test(suburb)) {
-      setAddressFormData((prevData) => ({
-        ...prevData,
-        suburbError: "The suburb must contain only letters.",
-      }));
-      hasError = true;
-    } else {
-      setAddressFormData((prevData) => ({
-        ...prevData,
-        suburbError: "",
-      }));
-    }
-
-    if (!geographicState || geographicState === "") {
-      setAddressFormData((prevData) => ({
-        ...prevData,
-        geographicStateError: "A state is required, Please select a state.",
-      }));
-      hasError = true;
-    } else {
-      setAddressFormData((prevData) => ({
-        ...prevData,
-        geographicStateError: "",
-      }));
-    }
-
-    return hasError;
-  }
-
-  /**
    * Handles updating the address form state with user input.
    * @param {string} name The name of the field to update, must be a valid key in the AddressFormState interface.
    * @param {boolean|string} value The new value of the field.
@@ -162,6 +85,63 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     }
   }
 
+  /**
+   * Validate the address form fields client-side, checking for empty fields,
+   * postcode length and contents, suburb contents, and geographic state selection.
+   * Updates the addressFormData state with any errors found.
+   *
+   * @param {string | undefined} postcode - The postcode input
+   * @param {string | undefined} suburb - The suburb input
+   * @param {string | undefined} geographicState - The geographic state input
+   * @returns {boolean} - Whether any errors were found.
+   */
+  function validateAddressFormClientSide(
+    postcode: string | undefined,
+    suburb: string | undefined,
+    geographicState: string | undefined
+  ): boolean {
+    let hasError = false;
+    let postcodeError = "";
+    let suburbError = "";
+    let geographicStateError = "";
+
+    if (!postcode || postcode === "") {
+      postcodeError = "A postcode is required. Please enter a postcode.";
+      hasError = true;
+    } else if (postcode && 4 !== postcode.length) {
+      postcodeError =
+        "The postcode you have entered is not valid, it must be 4 digits long.";
+      hasError = true;
+    } else if (!/^\d+$/.test(postcode)) {
+      postcodeError = "The postcode must contain only digits.";
+      hasError = true;
+    }
+
+    if (!suburb || suburb === "") {
+      suburbError = "A suburb is required. Please enter a suburb.";
+      hasError = true;
+    } else if (!/^[a-zA-Z\s]+$/.test(suburb)) {
+      suburbError = "The suburb must contain only letters.";
+      hasError = true;
+    }
+
+    if (!geographicState || geographicState === "") {
+      geographicStateError = "A state is required, Please select a state.";
+      hasError = true;
+    }
+
+    if (hasError) {
+      setAddressFormData((prevData) => ({
+        ...prevData,
+        geographicStateError: geographicStateError,
+        suburbError: suburbError,
+        postcodeError: postcodeError,
+      }));
+    }
+
+    return hasError;
+  }
+
   // TODO add JSDocString
   async function submitAddressForValidation(
     event: React.FormEvent<HTMLFormElement>
@@ -184,11 +164,13 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
       suburb,
       geographicState
     );
+
     if (hasError) {
       setAddressFormData((prevData) => ({
         ...prevData,
         isLoading: false,
       }));
+      console.log("early return");
       return;
     }
 
