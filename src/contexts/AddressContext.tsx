@@ -126,7 +126,7 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     }
 
     if (!geographicState || geographicState === "") {
-      geographicStateError = "A state is required, Please select a state.";
+      geographicStateError = "A state is required. Please select a state.";
       hasError = true;
     }
 

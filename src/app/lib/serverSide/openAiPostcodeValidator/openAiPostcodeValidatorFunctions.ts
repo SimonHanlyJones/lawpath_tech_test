@@ -67,6 +67,16 @@ async function callAusPostOpenAiModel(
 }
 
 /**
+ * Retry an API call up to `maxRetries` times with an exponential backoff of
+ * `delay` milliseconds between attempts.
+ *
+ * @param {() => Promise<any>} apiCall - The API call to retry.
+ * @param {number} [maxRetries=3] - The maximum number of attempts to make.
+ * @param {number} [delay=500] - The delay in milliseconds to wait between attempts.
+ * @returns {Promise<any>} - The result of the API call, or an Error if all attempts fail.
+ */
+
+/**
  * Handles the openAI chat completion process, including making initial calls and following up on any function calls
  * made by the model. The function will follow up on function calls until the model returns a result or maxes out
  * the number of allowed function calls. If the model does not return a valid result, an error is thrown.
@@ -122,7 +132,6 @@ async function openAiFunctionCallHandler(
         tool_call_id: toolCall.id,
       };
       messages.push(function_call_result_message);
-      // console.log(messages);
 
       response = await callAusPostOpenAiModel(messages);
     } catch (error) {

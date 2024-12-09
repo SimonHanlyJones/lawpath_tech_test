@@ -37,8 +37,6 @@ cd lawpath_tech_test
 # Install project dependencies using npm
 npm install
 
-# Or use yarn
-yarn install
 ```
 
 ### 3. Set Up Environment Variables
@@ -60,8 +58,6 @@ Replace `<your-australia-post-api-key>` and `<your-openai-api-key>` with your re
 # Start the development server
 npm run dev
 
-# Or use yarn
-yarn dev
 ```
 
 The application will be available at `http://localhost:3000`.
@@ -72,18 +68,26 @@ The application will be available at `http://localhost:3000`.
 
 To run integration tests, follow these steps:
 
-1. Start the development server:
+1. Start the a production server:
 
    ```bash
-   npm run dev
+   npm run build
+   npm run start
    ```
 
-2. Open a new terminal and run the tests:
+2. Open a new terminal and run the backend tests:
+
    ```bash
    npm test
    ```
 
-This will execute the integration tests against the development server.
+3. Run the frontend tests:
+
+   ```bash
+   npx playwright test
+   ```
+
+This will execute the integration tests against the server.
 
 ---
 
@@ -131,11 +135,11 @@ This project is optimized for deployment on Vercel. Follow these steps to deploy
 ├── app                  # Core application directory
 │   ├── components       # Reusable React components
 │   ├── fonts            # Custom fonts
+│   ├── styles           # CSS
 │   ├── interfaces       # TypeScript interfaces
-│   ├── lib              # Library code
-│   ├── test             # Test files
-│   ├── globals.css
+│   └── lib              # Library code
 ├── contexts             # Context API for state management
 ├── pages                # Next.js API routes
-└── public               # Public assets
+├── public               # Public assets
+└── tests                # Test files
 ```
