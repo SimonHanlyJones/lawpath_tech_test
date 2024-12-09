@@ -5,6 +5,7 @@ export interface InputFieldProps {
   label: string;
   placeholder?: string;
   value: string;
+  redField?: boolean;
   error?: string;
   onChange: (name: string, value: string) => void;
 }

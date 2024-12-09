@@ -8,6 +8,7 @@ export function Dropdown({
   label,
   options,
   value,
+  redField,
   error,
   onChange,
 }: DropdownProps) {
@@ -21,7 +22,7 @@ export function Dropdown({
         name={name}
         value={value}
         onChange={(event) => onChange(event.target.name, event.target.value)}
-        className={error ? "input-dropdown-error" : ""}
+        className={error || redField ? "input-dropdown-error" : ""}
       >
         <option value="" disabled>
           Select state

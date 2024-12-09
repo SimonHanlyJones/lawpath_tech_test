@@ -38,6 +38,7 @@ function AddressValidator() {
           label="Postcode"
           placeholder="Enter postcode"
           value={addressContext.state.postcode}
+          redField={addressContext.state.badPostcode}
           error={addressContext.state.postcodeError}
           onChange={addressContext.handleInputChange}
         />
@@ -48,6 +49,7 @@ function AddressValidator() {
           label="Suburb"
           placeholder="Enter suburb"
           value={addressContext.state.suburb}
+          redField={addressContext.state.badSuburb}
           error={addressContext.state.suburbError}
           onChange={addressContext.handleInputChange}
         />
@@ -58,6 +60,7 @@ function AddressValidator() {
           label="State"
           options={australianStates}
           value={addressContext.state.geographicState}
+          redField={addressContext.state.badGeographicState}
           error={addressContext.state.geographicStateError}
           onChange={addressContext.handleInputChange}
         />

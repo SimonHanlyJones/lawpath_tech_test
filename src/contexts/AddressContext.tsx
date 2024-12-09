@@ -142,7 +142,19 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
     return hasError;
   }
 
-  // TODO add JSDocString
+  /**
+   * Handles the submission of the address form, preventing the default form
+   * submission action. It validates the address fields client-side, and if any
+   * errors are found, it updates the addressFormData state with the errors. If
+   * no errors are found, it calls the queryPostcodeValidationProxy function
+   * with the form data and updates the addressFormData state with the response
+   * data. If an error occurs, it updates the addressFormData state with a
+   * generic error message and throws the error.
+   *
+   * @param {React.FormEvent<HTMLFormElement>} event - The form submission event.
+   * @returns {Promise<void>} - An empty promise that resolves when the
+   *   validation is complete.
+   */
   async function submitAddressForValidation(
     event: React.FormEvent<HTMLFormElement>
   ) {
@@ -170,7 +182,6 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
         ...prevData,
         isLoading: false,
       }));
-      console.log("early return");
       return;
     }
 
@@ -181,6 +192,7 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
         geographicState!,
         useAi!
       );
+      console.log("validationResponse: ", validationResponse);
 
       setAddressFormData((prevData) => ({
         ...prevData,
@@ -198,7 +210,6 @@ export const AddressProvider: React.FC<AddressProviderProps> = ({
         reasonInvalid: "Something went wrong. Please try again.",
         isLoading: false,
       }));
-      // TODO add display error
       throw new Error(`${error}`);
     }
   }

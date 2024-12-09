@@ -8,6 +8,7 @@ export function InputField({
   label,
   placeholder,
   value,
+  redField,
   error,
   onChange,
 }: InputFieldProps) {
@@ -23,7 +24,7 @@ export function InputField({
         placeholder={placeholder}
         value={value}
         onChange={(event) => onChange(event.target.name, event.target.value)}
-        className={error ? "input-error" : ""}
+        className={error || redField ? "input-error" : ""}
       />
       {error && <span className="client-error-text">{error}</span>}
     </div>
