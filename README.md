@@ -10,6 +10,7 @@ This project is a Next.js application that validates Australian addresses using 
 - GraphQL serverless function powered by Apollo Client.
 - Custom provider for address validator form state management.
 - OpenAI integration with custom tool calling.
+- Integration tests for the backend and UI tests for the frontend.
 
 ## Live Demo
 
@@ -183,7 +184,8 @@ I have set up a custom tool as required, I have also set up capacity for the Ope
 ### Intuitive and accessible form design & Effective client-side validation and user feedback
 
 I hope that the form design is to your liking. I have added client-side validation, with detail user feedback for all detectable errors. In addition a red color is given to fields that are likely the cause of an invalid postcode. For example, if a postcode matches a suburb, but the state is wrong. I attempt to guide the user to the error is shown in the screenshot below:
-![alt text](image.png)
+
+<img src="image.png" alt="alt text" style="width:400px;"/>
 
 ## Technical Expertise
 
@@ -207,7 +209,7 @@ The GitHub repo certainly contains a large number of descriptive commits.
 
 ### Proper branching strategy if applicable
 
-As I am the only person working on this project, and the project is delivered to specification, branching was not needed.
+During the project I experimented with several testing frameworks, including experimenting with replacing the project dependencies with those from the Jest, next.js demo project. This provided functional to some extend, but too risky. Because of the risk, I used a separate branch which was not merged back to main.
 
 ### Clear documentation in the repository
 

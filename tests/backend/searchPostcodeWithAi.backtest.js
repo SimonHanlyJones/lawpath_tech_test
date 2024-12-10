@@ -5,6 +5,7 @@ describe("GraphQL API Endpoint with AI Validation", () => {
   const endpoint = "http://localhost:3000/api/validatorProxy";
 
   it("should return valid true for correct suburb, postcode, and state using AI", async () => {
+    jest.setTimeout(10000);
     const query = `
       query SearchPostcode($suburb: String!, $postcode: String!, $state: String!, $useAi: Boolean!) {
         searchPostcode(suburb: $suburb, postcode: $postcode, state: $state, useAi: $useAi) {
@@ -36,6 +37,7 @@ describe("GraphQL API Endpoint with AI Validation", () => {
   });
 
   it("should return valid false for incorrect suburb, postcode, and state using AI", async () => {
+    jest.setTimeout(10000);
     const query = `
         query SearchPostcode($suburb: String!, $postcode: String!, $state: String!, $useAi: Boolean!) {
           searchPostcode(suburb: $suburb, postcode: $postcode, state: $state, useAi: $useAi) {
@@ -76,6 +78,7 @@ describe("GraphQL API Endpoint with AI Validation", () => {
   ];
 
   additionalPositiveTestCases.forEach(({ state, suburb, postcode }) => {
+    jest.setTimeout(10000);
     it(`should validate address using AI: ${suburb}, ${state}, ${postcode}`, async () => {
       const query = `
           query SearchPostcode($suburb: String!, $postcode: String!, $state: String!, $useAi: Boolean!) {
@@ -90,7 +93,6 @@ describe("GraphQL API Endpoint with AI Validation", () => {
         `;
 
       const variables = { suburb, postcode, state, useAi: true };
-      //   await setTimeout(() => {}, 200);
 
       const response = await axios.post(endpoint, { query, variables });
 
@@ -111,6 +113,7 @@ describe("GraphQL API Endpoint with AI Validation", () => {
 
   additionalNegativeTestCases.forEach(({ state, suburb, postcode }) => {
     it(`should invalidate address using AI: ${suburb}, ${state}, ${postcode}`, async () => {
+      jest.setTimeout(10000);
       const query = `
           query SearchPostcode($suburb: String!, $postcode: String!, $state: String!, $useAi: Boolean!) {
             searchPostcode(suburb: $suburb, postcode: $postcode, state: $state, useAi: $useAi) {
