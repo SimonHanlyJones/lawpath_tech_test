@@ -194,7 +194,7 @@ The GitHub repo certainly contains a large number of descriptive commits.
 
 ### Proper branching strategy if applicable
 
-During the project I experimented with several testing frameworks, including experimenting with replacing the project dependencies with those from the Jest, next.js demo project. This provided functional to some extend, but too risky. Because of the risk, I used a separate branch which was not merged back to main.
+During the project I experimented with several testing frameworks, including experimenting with replacing the project dependencies with those from the Jest, next.js demo project. This provided functional to some extent, but too risky. Because of the risk, I used a separate branch which was not merged back to main.
 
 ### Clear documentation in the repository
 
@@ -202,7 +202,7 @@ This is the documentation. I hope it is clear.
 
 ## Error Handling
 
-### Implement robust error handling for both validation methods & ### Provide user-friendly error messages
+### Implement robust error handling for both validation methods & Provide user-friendly error messages
 
 Error handling is robust. If an API fails, in addition to an error being thrown, the user interface will indicate a technical failure and prompt the user to try again.
 
