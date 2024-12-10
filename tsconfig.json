@@ -27,7 +27,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/app/test/graphql/searchPostcode.test.js"
+    "src/app/test/graphql/searchPostcode.test.js",
+    "tests/backend/searchPostcodeNoAI.backtest.js",
+    "tests/backend/checkSuburbAndStateAgainstApiResponse.backtest.js"
   ],
   "exclude": ["node_modules"]
 }

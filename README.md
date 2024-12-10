@@ -87,6 +87,8 @@ This will execute the integration tests against the server.
 
 ---
 
+It is necessary to run a production server rather than a development server.
+
 ## Deployment
 
 ### Vercel Deployment
@@ -130,13 +132,11 @@ This project is optimized for deployment on Vercel. Follow these steps to deploy
 .
 ├── app                  # Core application directory
 │   ├── components       # Reusable React components
-│   ├── fonts            # Custom fonts
 │   ├── styles           # CSS
 │   ├── interfaces       # TypeScript interfaces
 │   └── lib              # Library code
 ├── contexts             # Context API for state management
 ├── pages                # Next.js API routes
-├── public               # Public assets
 └── tests                # Test files
 ```
 

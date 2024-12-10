@@ -24,6 +24,16 @@ const SEARCH_POSTCODE_QUERY = gql`
   }
 `;
 
+/**
+ * Calls the postcodeValidator GraphQL API to validate a postcode, suburb, and state.
+ * It returns a {SearchPostcodeInterface} object with the validation result.
+ *
+ * @param {string} suburb - The suburb to validate
+ * @param {string} postcode - The postcode to validate
+ * @param {string} state - The state to validate
+ * @param {boolean} useAi - A flag indicating whether to use the AI-based validator
+ * @returns {Promise<SearchPostcodeInterface>} - A promise that resolves with the validation result
+ */
 export async function queryPostcodeValidationProxy(
   suburb: string,
   postcode: string,

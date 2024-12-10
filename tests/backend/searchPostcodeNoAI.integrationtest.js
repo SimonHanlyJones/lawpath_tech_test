@@ -5,6 +5,7 @@ describe("GraphQL API Endpoint", () => {
   const endpoint = "http://localhost:3000/api/validatorProxy";
 
   it("should return valid true for correct suburb, postcode, and state", async () => {
+    jest.setTimeout(10000);
     const query = `
       query SearchPostcode($suburb: String!, $postcode: String!, $state: String!, $useAi: Boolean!) {
         searchPostcode(suburb: $suburb, postcode: $postcode, state: $state, useAi: $useAi) {
@@ -36,6 +37,7 @@ describe("GraphQL API Endpoint", () => {
   });
 
   it("should return valid false for incorrect suburb, postcode, and state", async () => {
+    jest.setTimeout(10000);
     const query = `
       query SearchPostcode($suburb: String!, $postcode: String!, $state: String!, $useAi: Boolean!) {
         searchPostcode(suburb: $suburb, postcode: $postcode, state: $state, useAi: $useAi) {
@@ -79,6 +81,7 @@ describe("GraphQL API Endpoint", () => {
   ];
 
   additionalPositiveTestCases.forEach(({ state, suburb, postcode }) => {
+    jest.setTimeout(10000);
     it(`should validate address: ${suburb}, ${state}, ${postcode}`, async () => {
       const query = `
         query SearchPostcode($suburb: String!, $postcode: String!, $state: String!, $useAi: Boolean!) {
@@ -113,6 +116,7 @@ describe("GraphQL API Endpoint", () => {
 
   additionalNegativeTestCases.forEach(({ state, suburb, postcode }) => {
     it(`should invalidate address: ${suburb}, ${state}, ${postcode}`, async () => {
+      jest.setTimeout(10000);
       const query = `
         query SearchPostcode($suburb: String!, $postcode: String!, $state: String!, $useAi: Boolean!) {
           searchPostcode(suburb: $suburb, postcode: $postcode, state: $state, useAi: $useAi) {
