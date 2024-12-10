@@ -8,7 +8,8 @@
     "start": "next start",
     "test": "jest --watch",
     "test:ci": "jest --ci",
-    "test:integration": "jest --config jest.integration.config.ts"
+    "test:integration": "jest --config jest.integration.config.ts",
+    "test:unit": "jest --config jest.config.js"
   },
   "dependencies": {
     "@apollo/client": "^3.12.2",

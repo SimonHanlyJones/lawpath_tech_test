@@ -24,6 +24,10 @@ export async function callAustraliaPostApiPostcode(
       },
     });
 
+    if (!response) {
+      throw new Error(`AustPost API did not respond`);
+    }
+
     // unpack and parse response to get only what we need, the suburb, state and postcode
     const unpackedResponse = response.data.localities.locality;
 
