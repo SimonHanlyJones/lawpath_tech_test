@@ -14,7 +14,7 @@ This project is a Next.js application that validates Australian addresses using 
 
 ## Live Demo
 
-## This project has been deployed to vercel, and can be accessed here: [Lawpath Tech Test Deployment](https://lawpath-tech-test-isr8.vercel.app)
+This project has been deployed to vercel, and can be accessed here: [Lawpath Tech Test Deployment](https://lawpath-tech-test-isr8.vercel.app)
 
 ## Getting Started
 
