@@ -101,20 +101,6 @@ This project is optimized for deployment on Vercel. Follow these steps to deploy
 
 ---
 
-## API Key Information
-
-### Australia Post API
-
-- [Australia Post API Documentation](https://developers.auspost.com.au/)
-- Used for postcode and suburb validation.
-
-### OpenAI API
-
-- [OpenAI API Documentation](https://platform.openai.com/docs/)
-- Used for additional address processing (if applicable).
-
----
-
 ## Scripts
 
 | Command         | Description                       |
@@ -131,7 +117,6 @@ This project is optimized for deployment on Vercel. Follow these steps to deploy
 .
 ├── app                  # Core application directory
 │   ├── components       # Reusable React components
-│   ├── fonts            # Custom fonts
 │   ├── styles           # CSS
 │   ├── interfaces       # TypeScript interfaces
 │   └── lib              # Library code
